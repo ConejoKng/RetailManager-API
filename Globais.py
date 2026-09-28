@@ -9,7 +9,17 @@ produtos = [{
 {
     "nome": "feijão",
     "quantidade": 10,
-    "valor": 8.99   
+    "valor": 8.99
+},
+{
+    "nome": "Miojo",
+    "quantidade": 4,
+    "valor": 4   
+},
+{
+    "nome": "Farinha",
+    "quantidade": 2,
+    "valor": 2.00
 }
 ]
 vendas = []
@@ -48,3 +58,10 @@ def pesquisaSimNao(mensagem):
 
 def limparTela():
     os.system('cls')
+
+def mostrarProduto(produto):
+    print("==========")
+    print(f"Nome - {produto["nome"]}")
+    print(f"Estoque - {produto["quantidade"]}")
+    print(f"Valor - {produto["valor"]}")
+    print("==========") 
