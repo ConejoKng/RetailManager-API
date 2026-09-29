@@ -50,18 +50,21 @@ def tratarErroValor(mensagem):
             print("Digite apenas numeros!")
 
 def pesquisaSimNao(mensagem):
-    resposta = input(mensagem)
-    if resposta.lower() in ["s", "sim"]:
-        return True
-    else:
-        return False
+    while True:
+        resposta = input(mensagem)
+        if resposta.lower() in ["s", "sim"]:
+            return True
+        elif resposta.lower() in ["n", "não", "nao"] or resposta == "":
+            return False
+        else:
+            print("resposta invalida!")
 
 def limparTela():
     os.system('cls')
 
-def mostrarProduto(produto):
+def mostrarProduto(produto, nome = "nome", quantidade = "quantidade", valor = "valor"):
     print("==========")
-    print(f"Nome - {produto["nome"]}")
-    print(f"Estoque - {produto["quantidade"]}")
-    print(f"Valor - {produto["valor"]}")
+    print(f"Nome - {produto[nome]}")
+    print(f"Estoque - {produto[quantidade]}")
+    print(f"Valor - {produto[valor]}")
     print("==========") 

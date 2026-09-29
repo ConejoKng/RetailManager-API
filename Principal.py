@@ -1,6 +1,7 @@
 from motor.cadastrar import cadastrar
 from motor.listar import listar
 from motor.buscar import buscaProduto
+from motor.alterar import alterar
 from Globais import tratarErroPergunta, limparTela
 import sys
 
@@ -34,6 +35,10 @@ def menu():
         elif resposta == 3:
             limparTela()
             buscaProduto()
+
+        elif resposta == 4:
+            limparTela()
+            alterar()
 
 if __name__ == "__main__":
     menu()

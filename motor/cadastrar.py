@@ -9,13 +9,12 @@ def cadastrar():
             quantidade = tratarErroInt("Digite a quantidade: ")
             valor = tratarErroValor("Digite o valor: ")
 
-            produto = {
+            produtos.append({
                 "nome": nomeProduto,
                 "quantidade": quantidade,
                 "valor": valor
-            }
-
-            produtos.append(produto)
+            })
+            
             print(f"Produto cadastrado!\n" \
                   f"Nome: {nomeProduto}\n" \
                   f"Valor: {valor:.2f}R$")
