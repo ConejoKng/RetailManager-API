@@ -1,44 +1,48 @@
-from motor.cadastrar import cadastrar
-from motor.listar import listar
-from motor.buscar import buscaProduto
-from motor.alterar import alterar
-from Globais import tratarErroPergunta, limparTela
+from flask import Flask, jsonify, request
+from AbrirConexao import abrir_conexao
 import sys
 
-def menu():
-    limparTela()
-    while True:
-        resposta = tratarErroPergunta("====================\n" \
-            "1 - Cadastrar produto\n" \
-            "2 - Listar produtos\n" \
-            "3 - Buscar produto\n" \
-            "4 - Alterar produto\n" \
-            "5 - Remover produto\n" \
-            "6 - Registrar venda\n" \
-            "7 - Relatório\n" \
-            "0 - Sair\n" \
-            "====================\n" \
-            "Resposta: ", 7, 0)
+app = Flask(__name__)
 
-        if resposta == 0:
-            limparTela()
-            sys.exit()
+@app.route("/ping")
+def ping(): 
+    return jsonify({
+        "secess": "pong"
+    }), 200
 
-        elif resposta == 1:
-            limparTela()
-            cadastrar()
+@app.route("/v1/login",  methods=["GET"])
+def login():
+    conexao, con = abrir_conexao()
+    print("Conectado com sucesso!\n" \
+          "rota http://192.168.0.188:5000")
+    login = request.get_json()
 
-        elif resposta == 2:
-            limparTela()
-            listar()
+    user = login["user"]
+    password = login["password"]
 
-        elif resposta == 3:
-            limparTela()
-            buscaProduto()
+    if password.strip() == "" or user.strip() == "":
+        conexao.close()
+        return jsonify({
+            "Error": "Acesso não autorizado"
+        })
 
-        elif resposta == 4:
-            limparTela()
-            alterar()
+    con.execute("SELECT * FROM usuario WHERE login = ? and senha = ?", (user, password))
+
+    resultado = con.fetchall()
+
+    conexao.close()
+    
+    if resultado:
+        
+        return jsonify({
+            "Sucess": "Acesso autorizado!"
+        }), 200
+    else:
+        return jsonify({
+            "Error": "Acesso não autorizado"
+        }), 401
+
+    
 
 if __name__ == "__main__":
-    menu()
+    app.run(debug=True)
