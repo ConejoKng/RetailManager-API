@@ -86,13 +86,34 @@ def alterar():
                                                                     "Resposta: ", 3, 0)
 
                                     match perguntaQuant:
+                                        case 0:
+                                            break
+
                                         case 1:
                                             porcentagem = tratarErroInt("Quantos % você deseja que aumente?: ")
-                                            for produto in produtos:
-                                                produto["quantidade"] += produto["quantidade"] * porcentagem / 100
+                                            for indice in produtoList:
+                                                produto = produtos[indice]
+                                                produto["quantidade"] += int(produto["quantidade"] * porcentagem / 100)
+                                            print("produtos alterados com sucesso!")
+                                            limparTela()
 
+                                        case 2:
+                                            numero = tratarErroInt("Quanto você quer que aumente?: ")
+                                            for indice in produtoList:
+                                                produtos[indice]["quantidade"] += numero
+                                            print("Produtos alterados com sucesso!")
+                                            limparTela()
 
+                                        case 3: 
+                                            for indice in produtoList:
+                                                print("=========")
+                                                quantidade = tratarErroInt(f"Quanto você quer que aumente no produto {indice + 1}: ")
+                                                produtos[indice]["quantidade"] += quantidade
+                                                print("=========")
+                                            print("Produtos alterados com sucesso!")
 
+                                    if not pesquisaSimNao("Deseja alterar mais produtos?(S/N): "):
+                                        break
         else: 
             limparTela()
             break
