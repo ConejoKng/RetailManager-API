@@ -1,22 +1,11 @@
-from flask import Flask, jsonify, request
 from AbrirConexao import abrir_conexao
-import sys
+import jwt
+from flask import Flask, jsonify, request
+from datetime import datetime, timedelta, timezone
+from Globais.globais import SECRET_KEY
 
-app = Flask(__name__)
-
-@app.route("/ping")
-def ping(): 
-    return jsonify({
-        "secess": "pong"
-    }), 200
-
-@app.route("/v1/login",  methods=["GET"])
-def login():
+def login(login):
     conexao, con = abrir_conexao()
-    print("Conectado com sucesso!\n" \
-          "rota http://192.168.0.188:5000")
-    login = request.get_json()
-
     user = login["user"]
     password = login["password"]
 
@@ -33,16 +22,13 @@ def login():
     conexao.close()
     
     if resultado:
-        
+        agora = datetime.now(timezone.utc)
+        token = jwt.encode({"user": user, "exp": agora + timedelta(hours=1)}, SECRET_KEY, algorithm="HS256")
         return jsonify({
-            "Sucess": "Acesso autorizado!"
+            "Sucess": "Acesso autorizado!",
+            "token": token
         }), 200
     else:
         return jsonify({
             "Error": "Acesso não autorizado"
         }), 401
-
-    
-
-if __name__ == "__main__":
-    app.run(debug=True)
