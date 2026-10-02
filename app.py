@@ -1,6 +1,6 @@
 from Middleware.Auth import verifica_Token
 from Controllers.ControllerLogin import login
-from Controllers.ControllerProduto import produtoList, produtoAdd
+from Controllers.ControllerProduto import produtoList, produtoAdd, produtoDoc
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.register_blueprint(login, url_prefix="/v1")
 
 # Rotas produto
+app.register_blueprint(produtoDoc, url_prefix="/v1")
 app.register_blueprint(produtoList, url_prefix="/v1")
 app.register_blueprint(produtoAdd, url_prefix="/v1")
 

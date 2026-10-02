@@ -117,11 +117,11 @@ def addProduto(json):
         return {
             "Error": "Estrutura Json incorreta",
             "Estrutura correta": {
-                "nome": "nome -> Obrigatório",
+                "nome": "nome(String) -> Obrigatório",
                 "estoque": "estoque(int) -> Obrigatório(Valor opcional)",
                 "valor": "valor(float) -> Obrigatório",
                 "comissao": "comissao(int) -> Obrigatório",
-                "nota_fiscal": "nota_fiscal -> Obrigatório(Valor opcional)"
+                "nota_fiscal": "nota_fiscal(String) -> Obrigatório(Valor opcional)"
             }
         }
 
@@ -171,7 +171,7 @@ def addProduto(json):
         conexao.commit()
 
         return jsonify({
-            "Sucess": "produto adicionado com sucesso!",
+            "Sucess": "Produto adicionado com sucesso!",
             "produto_cadastrado": {
                 "nome": json['nome'],
                 "estoque": estoque,
