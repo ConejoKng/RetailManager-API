@@ -1,6 +1,19 @@
 from flask import request, jsonify
 from Globais.globais import abrir_conexao
 
+def jsonProduto(linha):
+    produto = {
+        "Produto": {
+            "id": linha[0], 
+            "nome": linha[1],
+            "estoque": linha[2],
+            "valor": linha[3], 
+            "nf": linha[5]
+        }
+    }
+
+    return produto
+
 def listProduto():
     sqlPadrao = "SELECT ID, NOME, ESTOQUE, VALOR, COMISSAO, NOTA_FISCAL FROM ESTOQUE"
     try:
@@ -99,16 +112,62 @@ def listProduto():
         if conexao:
             conexao.close()
 
-
-def jsonProduto(linha):
-    produto = {
-        "Produto": {
-            "id": linha[0], 
-            "nome": linha[1],
-            "estoque": linha[2],
-            "valor": linha[3], 
-            "nf": linha[5]
+def addProduto(json):
+    def estruturaJson():
+        return {
+            "Error": "Estrutura Json incorreta",
+            "Estrutura correta": {
+                "nome": "nome -> Obrigatório",
+                "estoque": "estoque(int) -> Obrigatório(Valor opcional)",
+                "valor": "valor(float) -> Obrigatório",
+                "comissao": "comissao(int) -> Obrigatório",
+                "nota_fiscal": "nota_fiscal -> Obrigatório(Valor opcional)"
+            }
         }
-    }
 
-    return produto
+    # Verifica se todas as chaves obrigatórias existem
+    if not all(chave in json for chave in ["nome","estoque", "valor", "comissao", "nota_fiscal"]):
+        return jsonify(estruturaJson()), 400
+
+    # Verifica se todos os valores obrigatórios vieram
+    if (json["nome"].strip() == "" or 
+        (str(json["valor"])).strip() == "" or
+        (str(json["comissao"])).strip() == ""):
+        return jsonify(estruturaJson()), 400
+
+    try: 
+        estoque = int(json.get("estoque", 0))
+        valor = int(json.get["valor"])
+    except ValueError:
+        return jsonify({
+            "Error": "Valor e estoque precisam ser numeros inteiros!"
+        }), 400
+
+    conexao = None
+    try:
+        conexao, con = abrir_conexao()
+
+        con.execute("""
+                    INSERT INTO ESTOQUE 
+                    (NOME, ESTOQUE, VALOR, COMISSAO, NOTA_FISCAL) VALUES
+                    (?, ?, ?, ?, ?)
+                    """, (json["nome"], estoque, valor, json["comissao", json["nota_fiscal"]]))
+
+        return jsonify({
+            "Sucess": "produto adicionado com sucesso!",
+            "produto": {
+                "nome": json['nome'],
+                "estoque": estoque,
+                "valor": valor
+            }
+        })
+
+    # Captura erro de conexão com o banco
+    except Exception as e:
+        print(f"Erro: {e}")
+        return jsonify ({
+            "Error": "Erro interno no banco"
+        }), 500
+    finally:
+        if conexao:
+            conexao.close()
