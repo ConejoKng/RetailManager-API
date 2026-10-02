@@ -1,11 +1,9 @@
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from flask import request, jsonify
-from Globais.globais import SECRET_KEY
+from Services.ServiceLogin import SECRET_KEY
 
 def verifica_Token():
-
-    print(request.endpoint)
     # Rotas públicas
     if request.endpoint == "ping" or request.endpoint == "login.rota_login":
         return None
@@ -25,8 +23,8 @@ def verifica_Token():
     token = request.headers.get("Authorization") # Recebe o token
 
     # Remove o Bearer caso ele exista
-    if token[:7] == "Bearer  ":
-        token = token[7:] 
+    if token[:7] == "Bearer ":
+        token = token[7:]
 
     try:
         jwt.decode(token, SECRET_KEY, algorithms=["HS256"])

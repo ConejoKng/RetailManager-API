@@ -1,8 +1,21 @@
-import os
-from dotenv import load_dotenv
+import configparser
+from firebird.driver import connect
 
-load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
+def abrir_conexao():
+    
+    config = configparser.ConfigParser()
+    config.read(r"C:/API/fm-api.ini")
 
-def exportSecret_key():
-    return SECRET_KEY
+    fb = config["FIREBIRD"]
+    dsn = f'{fb["host"]}/{fb["port"]}:{fb["caminho"]}'
+
+    conexao = connect(
+        dsn,
+        user=fb["usuario"],
+        password=fb["senha"],
+        charset="UTF8"
+    )
+
+    con = conexao.cursor()
+
+    return conexao, con

@@ -1,10 +1,12 @@
 from Middleware.Auth import verifica_Token
 from Controllers.ControllerLogin import login
+from Controllers.ControllerProduto import produtoList
 from flask import Flask, jsonify
 
 app = Flask(__name__)
 
 app.register_blueprint(login, url_prefix="/v1")
+app.register_blueprint(produtoList, url_prefix="/v1")
 
 app.before_request(verifica_Token)
 

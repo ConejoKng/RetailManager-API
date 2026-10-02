@@ -1,21 +1,23 @@
-from AbrirConexao import abrir_conexao
+from Globais.globais import abrir_conexao
 import jwt
 from flask import Flask, jsonify, request
 from datetime import datetime, timedelta, timezone
-from Globais.globais import SECRET_KEY
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 def login(login):
     conexao, con = abrir_conexao()
-    user = login["user"]
-    password = login["password"]
 
-    if password.strip() == "" or user.strip() == "":
+    if login["user"].strip() == "" or login["password"].strip() == "":
         conexao.close()
         return jsonify({
             "Error": "Acesso não autorizado"
         })
 
-    con.execute("SELECT * FROM usuario WHERE login = ? and senha = ?", (user, password))
+    con.execute("SELECT * FROM usuario WHERE login = ? and senha = ?", (login["user"], login["password"]))
 
     resultado = con.fetchall()
 
@@ -23,7 +25,8 @@ def login(login):
     
     if resultado:
         agora = datetime.now(timezone.utc)
-        token = jwt.encode({"user": user, "exp": agora + timedelta(hours=1)}, SECRET_KEY, algorithm="HS256")
+        token = jwt.encode({"user": login["user"], "exp": agora + timedelta(hours=1)}, SECRET_KEY, algorithm="HS256")
+        print(f"Login efetuado com sucesso! Usuario: {login["user"]}")
         return jsonify({
             "Sucess": "Acesso autorizado!",
             "token": token
