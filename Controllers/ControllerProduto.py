@@ -1,25 +1,19 @@
 from flask import Blueprint, request, jsonify
 from Services.ServiceProduto import listProduto as listar_produto
-from Services.ServiceProduto import addProduto as Adicionar_produto
+from Services.ServiceProduto import addProduto as adicionar_produto
+from Services.ServiceProduto import delProduto as deletar_produto
+from Globais.globais import urlPrefix
 
 produtoList = Blueprint("produto/listar", __name__)
 produtoAdd = Blueprint("produto/adicionar", __name__)
 produtoDoc = Blueprint("produto/doc", __name__)
-
-@produtoList.route("/produto/listar", methods=["GET"])
-def rota_produtoListar():
-    return listar_produto()
-
-@produtoAdd.route("/produto/adicionar", methods=["POST"])
-def rota_produtoAdd():
-    json = request.get_json()
-    return Adicionar_produto(json)
+produtoDel = Blueprint("produto/delete", __name__)
 
 @produtoDoc.route("/produto/doc", methods=["GET"])
 def rota_docProduto():
     return jsonify({
         "EndPoints_Produtos": {
-            "rota": "/v1/produto/listar",
+            "rota": f"{urlPrefix}/produto/listar",
             "GET": {
                 "Parametros_de_Query": {
                     "pagina": "int -> caso não enviado padrão: 1",
@@ -42,7 +36,7 @@ def rota_docProduto():
             }
             }
         },
-            "rota": "/v1/produto/adicionar",
+            "rota": f"{urlPrefix}/produto/adicionar",
             "POST": {
                 "Estrutura_JSON": {
                     "nome": "String - Chave(Obrigatório) / Valor(Obrigatório)",
@@ -63,3 +57,17 @@ def rota_docProduto():
             }
         }
     })
+
+@produtoList.route("/produto/listar", methods=["GET"])
+def rota_produtoListar():
+    return listar_produto()
+
+@produtoAdd.route("/produto/adicionar", methods=["POST"])
+def rota_produtoAdd():
+    json = request.get_json()
+    return adicionar_produto(json)
+
+@produtoDel("/produto/delete", methods=["DELETE"])
+def rota_produtoDel():
+    json = request.get_json()
+    return deletar_produto(json)

@@ -1,6 +1,8 @@
 import configparser
 from firebird.driver import connect
 
+urlPrefix = "/v1"   
+
 def abrir_conexao():
     
     config = configparser.ConfigParser()
