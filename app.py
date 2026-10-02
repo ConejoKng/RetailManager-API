@@ -1,6 +1,6 @@
 from Middleware.Auth import verifica_Token
 from Controllers.ControllerLogin import login
-from Controllers.ControllerProduto import produtoList
+from Controllers.ControllerProduto import produtoList, produtoAdd
 from flask import Flask, jsonify
 
 app = Flask(__name__)

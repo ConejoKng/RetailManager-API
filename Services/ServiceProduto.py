@@ -135,12 +135,27 @@ def addProduto(json):
         (str(json["comissao"])).strip() == ""):
         return jsonify(estruturaJson()), 400
 
-    try: 
-        estoque = int(json.get("estoque", 0))
-        valor = int(json.get["valor"])
-    except ValueError:
+    # Se a nota fiscal vier vazia ela recebe none
+    if str(json["nota_fiscal"]).strip() == "":
+        nota_fiscal = None
+    else:
+        nota_fiscal = json["nota_fiscal"]
+
+    try:
+        if str(json["estoque"]).strip() == "":
+            estoque = 0
+        else:
+            estoque = int(json.get("estoque"))
+        valor = float(json.get("valor"))
+        comissao = int(json.get("comissao"))
+    except (ValueError, TypeError):
         return jsonify({
-            "Error": "Valor e estoque precisam ser numeros inteiros!"
+            "Error": "tipos invalidos",
+            "Tipos_corretos": {
+                "valor": "Float",
+                "estoque": "Int",
+                "comissao": "Int"
+            }
         }), 400
 
     conexao = None
@@ -151,14 +166,17 @@ def addProduto(json):
                     INSERT INTO ESTOQUE 
                     (NOME, ESTOQUE, VALOR, COMISSAO, NOTA_FISCAL) VALUES
                     (?, ?, ?, ?, ?)
-                    """, (json["nome"], estoque, valor, json["comissao", json["nota_fiscal"]]))
+                    """, (json["nome"], estoque, valor, comissao, nota_fiscal))
+
+        conexao.commit()
 
         return jsonify({
             "Sucess": "produto adicionado com sucesso!",
-            "produto": {
+            "produto_cadastrado": {
                 "nome": json['nome'],
                 "estoque": estoque,
-                "valor": valor
+                "valor": valor,
+                "nota_fiscal": nota_fiscal
             }
         })
 
