@@ -249,7 +249,7 @@ def delProduto(json):
                     "Sucess": f"todos os produtos da {todos_marca} foram apagados."
                 }), 200
 
-        if str(id) == "":
+        if str(id) != "":
             con.execute("SELECT ID FROM ESTOQUE WHERE ID = ?", (id,))
             resultado = con.fetchone()
             if resultado is None:
