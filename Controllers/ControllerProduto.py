@@ -1,5 +1,5 @@
 from flask import Blueprint
-from Services.ServiceProdutoList import listProduto as listar_produto
+from Services.ServiceProduto import listProduto as listar_produto
 
 produtoList = Blueprint("produto/listar", __name__)
 
