@@ -217,7 +217,6 @@ def delProduto(json):
         todos = json.get("todos") is True
         todos_marca = str(json["todos_marca"])
         id = int(json["id"])
-        nome_marca = str(json["nome_marca"])
         nota_fiscal = str(json["nota_fiscal"])
     except (TypeError, ValueError):
         return jsonify({
@@ -237,7 +236,7 @@ def delProduto(json):
             }), 200
 
         if todos_marca.strip() != "":
-            con.execute("SELECT * FROM ESTOQUE WHERE NOME_MARCA = ?", (nome_marca,))
+            con.execute("SELECT * FROM ESTOQUE WHERE NOME_MARCA = ?", (todos_marca,))
             resultado = con.fetchall()
             if len(resultado) == 0:
                 return jsonify({
