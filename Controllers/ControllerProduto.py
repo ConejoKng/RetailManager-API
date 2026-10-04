@@ -67,7 +67,7 @@ def rota_produtoAdd():
     json = request.get_json()
     return adicionar_produto(json)
 
-@produtoDel("/produto/delete", methods=["DELETE"])
+@produtoDel.route("/produto/delete", methods=["DELETE"])
 def rota_produtoDel():
     json = request.get_json()
     return deletar_produto(json)
