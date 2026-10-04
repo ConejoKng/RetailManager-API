@@ -186,7 +186,7 @@ def addProduto(json):
         conexao, con = abrir_conexao()
 
         # Verifica se o produto que está sendo cadastrado existe no banco
-        con.execute("SELECT NOME FROM ESTOQUE WHERE NOME = ?", (nome, ))
+        con.execute("SELECT NOME FROM ESTOQUE WHERE NOME = ? AND ID_MARCA = ?", (nome, id_marca))
         resultado = con.fetchone()
         if resultado is not None:
             return jsonify({
