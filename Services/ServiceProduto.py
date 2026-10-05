@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from Globais.globais import abrir_conexao
 
-def jsonProduto(linha):
+def jsonProduto(linha):  
     produto = {
         "Produto": {
             "id": linha[0], 
@@ -16,7 +16,8 @@ def jsonProduto(linha):
     return produto
 
 def listProduto():
-    sqlPadrao = "SELECT e.ID, e.NOME, e.ESTOQUE, e.VALOR, e.COMISSAO, e.NOTA_FISCAL, m.nome FROM ESTOQUE e"
+    sqlPadrao = "SELECT e.ID, e.NOME, e.ESTOQUE, e.VALOR, e.COMISSAO, e.NOTA_FISCAL, m.NOME FROM ESTOQUE e"
+    sqlFiltro = ""
     try:
         pagina = int(request.args.get("pagina", "1"))
         limite = int(request.args.get("limite", "10"))
@@ -43,15 +44,16 @@ def listProduto():
             estoque = 0
     except ValueError:
         return jsonify({
-            "Error": "Erro de conversão, estrutura json incorreta"
+            "Error": "Erro de conversão, estrutura incorreta"
         }), 400
 
     conexao = None
     try:
         conexao, con = abrir_conexao()
+
         # Filtro por produto filtro unico
         if request.args.get("id"):
-            con.execute(f"{sqlPadrao}  WHERE ID = ?", (request.args.get("id"),))
+            con.execute(f"{sqlPadrao} INNER JOIN marca m ON m.id = e.id_marca WHERE e.ID = ?", (request.args.get("id"),))
 
             linha = con.fetchone()
 
@@ -68,27 +70,27 @@ def listProduto():
 
         # Filtro por nome
         if request.args.get("nome"):
-            sqlPadrao += " WHERE NOME = ?"
-            parametros.append(request.args.get("nome"))
+            sqlFiltro += " WHERE e.NOME = ?"
+            parametros.append(request.args.get("nome").upper())
             where_adicionado = True
 
         # Filtra por estoque
         if valor:
             if not where_adicionado:
-                sqlPadrao += " WHERE VALOR = ?"
+                sqlFiltro += " WHERE e.VALOR = ?"
                 where_adicionado = True
             else:
-                sqlPadrao += " AND VALOR = ?"
+                sqlFiltro += " AND e.VALOR = ?"
 
             parametros.append(valor)
 
         # Filtra por estoque
         if estoque:
             if not where_adicionado:
-                sqlPadrao += " WHERE ESTOQUE = ?"
+                sqlFiltro += " WHERE e.ESTOQUE = ?"
                 where_adicionado = True
             else:
-                sqlPadrao += " AND ESTOQUE = ?"
+                sqlFiltro += " AND e.ESTOQUE = ?"
 
             parametros.append(estoque)
 
@@ -97,8 +99,8 @@ def listProduto():
         paginacao = " ORDER BY e.ID ROWS ? TO ?" 
 
         # Executa a query no banco
-        con.execute(sqlPadrao + innerJoin + paginacao, parametros)
-        print(sqlPadrao + innerJoin + paginacao, parametros)
+        con.execute(sqlPadrao + innerJoin + sqlFiltro + paginacao, parametros)
+        # print(sqlPadrao + innerJoin + paginacao, parametros)
 
         linha = con.fetchall()
 
@@ -123,7 +125,7 @@ def listProduto():
         print(f"Erro: {e}")
         return jsonify({
             "Error": "Erro interno no servidor"
-        }), 500
+        }), 500                                                                                                                     
     finally:
         # Fecha Conexão com o banco 
         if conexao:
