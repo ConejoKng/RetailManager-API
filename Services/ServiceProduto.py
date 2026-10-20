@@ -97,9 +97,10 @@ def listProduto():
         parametros.extend([inicio, fim]) # Adiciona paginação
         innerJoin = " INNER JOIN marca m ON m.id = e.id_marca"
         paginacao = " ORDER BY e.ID ROWS ? TO ?" 
+        sqlMaster = sqlPadrao + innerJoin + sqlFiltro
 
         # Executa a query no banco
-        con.execute(sqlPadrao + innerJoin + sqlFiltro + paginacao, parametros)
+        con.execute(sqlMaster + paginacao, parametros)
         # print(sqlPadrao + innerJoin + paginacao, parametros)
 
         linha = con.fetchall()
@@ -188,7 +189,7 @@ def addProduto(json):
         conexao, con = abrir_conexao()
 
         # Verifica se o produto que está sendo cadastrado existe no banco
-        con.execute("SELECT NOME FROM ESTOQUE WHERE NOME = ? AND ID_MARCA = ?", (nome, id_marca))
+        con.execute("SELECT NOME FROM ESTOQUE E WHERE NOME = ? AND ID_MARCA = ?", (nome, id_marca))
         resultado = con.fetchone()
         if resultado is not None:
             return jsonify({
@@ -204,11 +205,15 @@ def addProduto(json):
 
         conexao.commit()
 
+        con.execute("SELECT NOME FROM MARCA WHERE ID = ?", (id_marca,))
+
+        nome_marca = con.fetchone()
+
         return jsonify({
             "Sucess": "Produto adicionado com sucesso!",
             "produto_cadastrado": {
                 "nome": nome,
-                "id_marca": id_marca,
+                "nome_marca": nome_marca[0],
                 "estoque": estoque,
                 "valor": valor,
                 "nota_fiscal": nota_fiscal
