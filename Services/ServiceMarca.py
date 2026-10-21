@@ -16,9 +16,10 @@ def listMarca():
     try:
         pagina = int(request.args.get("pagina", "1"))
         limite = int(request.args.get("limite", "10"))
+        id_marca = int(request.args.get("id_marca", "0"))
     except ValueError:
         return jsonify({
-            "Error": "Paginação e limite devem ser numeros inteiros!"
+            "Error": "Tipagem de valores incorreta"
         }), 400
 
     if pagina <= 0:
@@ -28,12 +29,6 @@ def listMarca():
     inicio = ((pagina - 1) * limite) + 1
     fim = inicio + limite - 1
 
-    try:
-        id_marca = int(request.args.get("id_marca", "0"))
-    except ValueError:
-        return jsonify({
-            "Error": "id da marca precisa ser um numero inteiro!"
-        })
     nome = request.args.get("nome_marca", "")
 
     conexao = None
